@@ -5,11 +5,13 @@ function App() {
   // Inputs
   const [cedula, setCedula] = useState("");
   const [ruc, setRuc] = useState("");
+  const [rucInfo, setRucInfo] = useState("");
   const [placa, setPlaca] = useState("");
 
   // Respuestas
   const [ant, setAnt] = useState(null);
-  const [sri, setSri] = useState(null); // ahora es un objeto {contribuyente: true/false}
+  const [sri, setSri] = useState(null);
+  const [sriInfo, setSriInfo] = useState(null);
   const [vehiculo, setVehiculo] = useState(null);
 
   // Control UI
@@ -18,7 +20,7 @@ function App() {
 
   const API = "http://localhost:8080/api";
 
-  // -ANT-
+  // --- ANT ---
   const buscarANT = async () => {
     setLoading(true);
     setError("");
@@ -32,7 +34,7 @@ function App() {
     setLoading(false);
   };
 
-  // -SRI-
+  // --- SRI: Es contribuyente ---
   const buscarSRI = async () => {
     setLoading(true);
     setError("");
@@ -46,7 +48,21 @@ function App() {
     setLoading(false);
   };
 
-  // -VEHICULO-
+  // --- SRI: Información detallada ---
+  const buscarSRIInfo = async () => {
+    setLoading(true);
+    setError("");
+    setSriInfo(null);
+    try {
+      const res = await axios.get(`${API}/sri/info/${rucInfo}`);
+      setSriInfo(res.data);
+    } catch (e) {
+      setError("Error consultando información del contribuyente");
+    }
+    setLoading(false);
+  };
+
+  // --- Vehículo ---
   const buscarVehiculo = async () => {
     setLoading(true);
     setError("");
@@ -85,9 +101,9 @@ function App() {
         )}
       </div>
 
-      {/* -------------------- SRI -------------------- */}
+      {/* -------------------- SRI: Es contribuyente -------------------- */}
       <div style={{ marginBottom: "20px", padding: "10px", border: "1px solid #ccc" }}>
-        <h2>ES CONTRIBUYENTE?</h2>
+        <h2>Contribuyente SRI?</h2>
         <input
           value={ruc}
           onChange={(e) => setRuc(e.target.value)}
@@ -98,6 +114,28 @@ function App() {
         {sri && (
           <div style={{ marginTop: "10px" }}>
             <p><strong>Es contribuyente:</strong> {sri.contribuyente ? "Sí" : "No"}</p>
+          </div>
+        )}
+      </div>
+
+      {/* -------------------- SRI: Información detallada -------------------- */}
+      <div style={{ marginBottom: "20px", padding: "10px", border: "1px solid #ccc" }}>
+        <h2>Información del Contribuyente SRI</h2>
+        <input
+          value={rucInfo}
+          onChange={(e) => setRucInfo(e.target.value)}
+          placeholder="RUC"
+        />
+        <button onClick={buscarSRIInfo}>Consultar</button>
+
+        {sriInfo && (
+          <div style={{ marginTop: "10px" }}>
+            <p><strong>RUC:</strong> {sriInfo.numeroRuc}</p>
+            <p><strong>Razon Social:</strong> {sriInfo.razonSocial}</p>
+            <p><strong>Estado:</strong> {sriInfo.estadoContribuyenteRuc}</p>
+            <p><strong>Actividad Principal:</strong> {sriInfo.actividadEconomicaPrincipal}</p>
+            <p><strong>Tipo:</strong> {sriInfo.tipoContribuyente}</p>
+            <p><strong>Fecha Inicio Actividades:</strong> {sriInfo.fechaInicioActividades}</p>
           </div>
         )}
       </div>

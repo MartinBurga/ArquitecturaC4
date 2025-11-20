@@ -3,7 +3,9 @@ package org.example.backend.controller;
 import lombok.RequiredArgsConstructor;
 import org.example.backend.dto.AntResponse;
 import org.example.backend.dto.SriExistResponse;
+import org.example.backend.dto.SriPersonResponse;
 import org.example.backend.service.AntService;
+import org.example.backend.service.SriInfoService;
 import org.example.backend.service.SriService;
 import org.example.backend.service.VehicleService;
 import org.example.backend.dto.VehicleResponse;
@@ -17,6 +19,8 @@ public class ApiController {
     private final AntService antService;
     private final SriService sriService;
     private final VehicleService vehicleService;
+    private final SriInfoService sriInfoService;
+
 
     // -------------------- ANT --------------------
     @GetMapping("/ant/{cedula}")
@@ -29,7 +33,7 @@ public class ApiController {
         }
     }
 
-    // -------------------- SRI --------------------
+    // -------------------- SRI Contribuyente --------------------
     @GetMapping("/sri/{ruc}")
     public SriExistResponse getContribuyenteSri(@PathVariable String ruc) {
         try {
@@ -39,9 +43,11 @@ public class ApiController {
         }
     }
 
-
-
-
+    // -------------------- iNFO RUC PERSONA --------------------
+    @GetMapping("/sri/info/{ruc}")
+    public SriPersonResponse getInfoSri(@PathVariable String ruc) {
+        return sriInfoService.obtenerInfoContribuyente(ruc);
+    }
 
     // -------------------- VEHÍCULO --------------------
     @GetMapping("/vehiculo/{placa}")
